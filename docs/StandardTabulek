@@ -1,0 +1,177 @@
+Adresní sloupce
+        [O_DatAkt] [date] NULL,
+        [O_ObecNazev] [varchar](45) NULL,
+        [O_ObecID] [int] NOT NULL,
+        [O_ObecUniq] [bit] NULL,
+        [O_ObecTyp] [varchar](20) NULL,
+        [O_PoverNazev] [varchar](45) NULL,
+        [O_PoverID] [int] NULL,
+        [O_PoverRUIAN] [int] NULL,
+        [O_PSC] [varchar](10) NULL,
+        [O_ObecZUJ] [int] NULL,
+        [O_RozsirNazev] [varchar](45) NULL,
+        [O_RozsirID] [int] NULL,
+        [O_RozsirRUIAN] [int] NULL,
+        [O_cObceID] [int] NULL,
+        [O_OkresNazev] [varchar](35) NULL,
+        [O_OkresID] [int] NULL,
+        [O_OkresID9] [varchar](8) NULL,
+        [O_OkresRUIAN] [int] NULL,
+        [O_KrajNazev] [varchar](35) NULL,
+        [O_KrajZkr] [varchar](5) NULL,
+        [O_KrajID] [int] NULL,
+        [O_KrajNUTS] [varchar](8) NULL,
+        [O_KrajRUIAN] [int] NULL,
+        [O_RegioNazev] [varchar](30) NULL,
+        [O_RegioID] [int] NULL,
+        [O_RegioNUTS] [varchar](6) NULL,
+        [O_RegioRUIAN] [int] NULL,
+        [O_ZemeNUTS0] [varchar](5) NULL,
+        [O_SZemeRUIAN] [int] NULL,
+        [O_LATITUDE] [varchar](15) NULL,
+        [O_LONGITUDE] [varchar](15) NULL,
+        [O_COORD_Y] [varchar](15) NULL,
+        [O_COORD_X] [varchar](15) NULL,
+        [O_odkaz_SMS] [varchar](150) NULL,
+        [O_odkaz_RSO] [varchar](150) NULL,
+        [odkaz_RSO] [varchar](150) NULL,
+
+
+Ulice
+[A_AdmID] [int] NULL,
+[A_ObecID] [int] NULL,
+[A_ObecNazev] [varchar](45) NULL,
+[A_MomcID] [int] NULL,
+[A_MomcNazev] [varchar](40) NULL,
+[A_PrahaID] [int] NULL,
+[A_PrahaNazev] [varchar](15) NULL,
+[A_cObceID] [int] NULL,
+[A_cObceNazev] [varchar](55) NULL,
+[A_UliceID] [int] NULL,
+[A_UliceNazev] [varchar](60) NULL,
+[A_TypCdom] [varchar](6) NULL,
+[A_CisloDom] [varchar](8) NULL,
+[A_CisloOrie] [varchar](8) NULL,
+[A_ZnakCisOr] [varchar](3) NULL,
+[A_PSC] [varchar](10) NULL,
+[A_COORD_Y] [varchar](15) NULL,
+[A_COORD_X] [varchar](15) NULL,
+[A_DatCreate] [datetime] NULL,
+[A_DatImport] [datetime] NULL,
+[A_Aktivni] [bit] NULL
+
+
+Osobní údaje	
+Firma	varchar(255)
+ICO	varchar(15)
+DIC	varchar(20)
+FirmTyp	varchar(10)
+FTypNazev	varchar(150)
+	
+Jmeno	varchar(30)
+Jmeno2	varchar(30)
+Prijmeni	varchar(50)
+Prijmeni2	varchar(50)
+Rozena	varchar(50)
+DatNarozeni	datetime
+RodneCislo	datetime
+Pohlavi	varchar(5)
+TitulPred	varchar(20)
+TitulZa	varchar(20)
+TelCis	varchar(16)
+MobCis	varchar(16)
+EmailPrac	
+EmailOsob	
+
+
+AresVazby
+        [ICO] [varchar](15) NULL,
+        [C_OkresID9] [varchar](8) NULL,
+        [DatCreate] [date] NULL,
+        [DatErase] [date] NULL,
+        [C_ZanikID] [int] NULL,
+        [DatAktu] [date] NULL,
+        [C_FormaID] [int] NULL,
+        [C_rFormaID] [int] NULL,
+        [C_KatPoID] [int] NULL,
+        [C_NaceID] [varchar](8) NULL,
+        [C_Nace25ID] [varchar](8) NULL,
+        [C_ObecZUJ] [int] NULL,
+        [FirmaNazev] [varchar](255) NULL,
+        [C_InstituID] [int] NULL,
+        [A_AdmID] [int] NULL,
+        [TextAdr] [varchar](255) NULL,
+        [O_PSC] [varchar](10) NULL,
+        [O_ObecNazev] [varchar](45) NULL,
+        [O_cObceNazev] [varchar](45) NULL,
+        [A_UliceNazev] [varchar](60) NULL,
+        [A_TypCdom] [varchar](6) NULL,
+        [A_CisloDom] [varchar](8) NULL,
+        [A_CisloOrie] [varchar](8) NULL,
+        [DatPlatn] [date] NULL,
+        [Priznak] [varchar](255) NULL
+
+
+RV
+        [ID] [bigint] IDENTITY(1,1) NOT NULL,
+        [RV_PCV] [varchar](10) NULL,
+        [RV_VIN] [varchar](35) NULL,
+        [RV_CISLO_OTP] [varchar](15) NULL,
+        [RV_STATUS] [varchar](25) NULL,
+        [RV_ZARAZENI] [varchar](10) NULL,
+        [RV_DRUH_RZ] [varchar](25) NULL,
+        [RV_DAT_REG] [date] NULL,
+        [RV_DAT_REG_CR] [date] NULL,
+        [RV_ROK_VYROBY] [varchar](8) NULL,
+        [RV_DRUH] [varchar](60) NULL,
+        [RV_DRUH2] [varchar](70) NULL,
+        [RV_KATEGORIE] [varchar](20) NULL,
+        [RV_ZNACKA] [varchar](50) NULL,
+        [RV_OZNACENI] [varchar](70) NULL,
+        [RV_TYP] [varchar](80) NULL,
+        [RV_TYP_KOD] [varchar](40) NULL,
+        [RV_VARIANTA] [varchar](70) NULL,
+        [RV_VERZE] [varchar](700) NULL,
+        [RV_VYROBCE] [varchar](180) NULL,
+        [RV_UCEL] [varchar](80) NULL,
+        [RV_TYP_MOTORU] [varchar](60) NULL,
+        [RV_VYROBCE_MOTORU] [varchar](150) NULL,
+        [RV_PALIVO] [varchar](30) NULL,
+        [RV_OBJEM] [varchar](10) NULL,
+        [RV_VYKON] [varchar](25) NULL,
+        [RV_ELEKTRO] [bit] NULL,
+        [RV_HYBRID] [bit] NULL,
+        [RV_HYBRID_TRIDA] [varchar](30) NULL,
+        [RV_EMISE_EURO] [varchar](20) NULL,
+        [RV_DRUH_TYP] [varchar](70) NULL,
+        [RV_VYROBCE_KAR] [varchar](150) NULL,
+        [RV_BARVA] [varchar](30) NULL,
+        [RV_BARVA_DOPL] [varchar](30) NULL,
+        [RV_HMOTNOST] [varchar](15) NULL,
+        [RV_HMOTNOST_DO] [varchar](15) NULL,
+        [RV_POCET_MIST] [varchar](60) NULL,
+        [RV_MAX_RYCHLOST] [varchar](15) NULL,
+        [RV_ABS] [bit] NULL,
+        [RV_AIRBAG] [varchar](20) NULL,
+        [RV_ASR] [bit] NULL,
+        [RV_DOPLNEK_TP] [nvarchar](550) NULL,
+        [RV_AUTONOMITA] [varchar](30) NULL,
+        [RV_ZDROJ_SOUBOR] [varchar](30) NULL,
+
+
+dim_DomainCZ
+        [D_Nazev] [varchar](80) NULL,
+        [D_DNS] [varchar](350) NULL,
+        [D_NS1] [varchar](150) NULL,
+        [D_NS2] [varchar](50) NULL,
+        [D_NS3] [varchar](120) NULL,
+        [D_IP] [varchar](15) NULL,
+        [D_ZemeZkr] [varchar](5) NULL,
+        [D_InfraStr] [varchar](30) NULL,
+        [D_Email] [varchar](200) NULL,
+        [D_Tel] [varchar](30) NULL,
+        [D_DatAkt] [datetime] NULL,
+        [D_DatImport] [datetime] NULL,
+        [D_Aktivni] [bit] NULL
+
+
