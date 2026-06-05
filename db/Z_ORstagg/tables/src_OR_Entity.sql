@@ -1,0 +1,34 @@
+USE [Z_ORstagg]
+GO
+
+/****** Object:  Table [dbo].[src_OR_Entity]    Script Date: 05.06.2026 21:07:40 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[src_OR_Entity](
+	[EntityID] [int] IDENTITY(1,1) NOT NULL,
+	[ICO] [varchar](20) NOT NULL,
+	[PravniFormaKod] [nvarchar](20) NULL,
+	[Nazev] [nvarchar](500) NULL,
+	[ZapisDatum] [date] NULL,
+	[VymazDatum] [date] NULL,
+	[SoubornNazev] [nvarchar](260) NULL,
+	[DatLoad] [datetime] NOT NULL,
+ CONSTRAINT [PK_OR_Entity] PRIMARY KEY CLUSTERED 
+(
+	[EntityID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [STAGING_DATA],
+ CONSTRAINT [UQ_OR_Entity_ICO] UNIQUE NONCLUSTERED 
+(
+	[ICO] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [STAGING_DATA]
+) ON [STAGING_DATA]
+GO
+
+ALTER TABLE [dbo].[src_OR_Entity] ADD  CONSTRAINT [DF_OR_Entity_DatLoad]  DEFAULT (getdate()) FOR [DatLoad]
+GO
+
+
