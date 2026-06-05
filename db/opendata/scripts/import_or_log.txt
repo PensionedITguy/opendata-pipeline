@@ -1,0 +1,25 @@
+15:37:10  === import_or.py ===
+15:37:10  Nalezeno 7 souboru v E:\1_OPENDATA\OBCH_REJSTRIK\new
+15:37:10  Nacitam existujici ICO z DB...
+15:37:12  V DB je 262,539 existujicich entit
+15:37:12  [1/7] sro-full-brno-2026.xml
+15:56:20    -> entity:98094  commit OK
+15:56:21  [2/7] sro-full-ceske_budejovice-2026.xml
+16:01:47    -> entity:119893  commit OK
+16:01:47  [3/7] sro-full-hradec_kralove-2026.xml
+16:08:44    -> entity:154876  commit OK
+16:08:44  [4/7] sro-full-ostrava-2026.xml
+16:22:48    -> entity:217400  commit OK
+16:22:48  [5/7] sro-full-plzen-2026.xml
+16:30:26    -> entity:246892  commit OK
+16:30:26  [6/7] sro-full-praha-2026.xml
+17:30:49    -> entity:549659  commit OK
+17:30:49  [7/7] sro-full-usti_nad_labem-2026.xml
+17:36:57    -> entity:582207  commit OK
+17:36:57  ============================================================
+17:36:57  Hotovo.
+17:36:57    Souboru:           7
+17:36:57    Entity:      582,207
+17:36:57    Organy:    2,185,495
+17:36:57    Podily:    3,675,984
+17:36:57  Celkovy cas: 1:59:46.358513
