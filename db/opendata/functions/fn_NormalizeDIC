@@ -1,0 +1,108 @@
+USE [Opendata]
+GO
+
+-- ============================================================
+-- fn_NormalizeDIC
+-- Normalizuje DIČ do standardního formátu.
+--
+-- Parametry:
+--   @input    - vstupní řetězec (raw DIČ z libovolného zdroje)
+--   @StatKod  - ISO alpha-2 kód státu (např. 'CZ', 'DE', 'SK')
+--               NULL = neznámý stát
+--
+-- Vrací:
+--   Normalizované DIČ nebo NULL
+--
+-- Logika podle státu:
+--
+--   CZ (česká DIČ) – přesná validace:
+--     Formát: CZ + 8–10 číslic
+--     8 číslic  = právnická osoba (= IČO)
+--     9 číslic  = fyzická osoba se starším RC (RRMMDDNNN)
+--     10 číslic = fyzická osoba s RC ve formátu RRMMDD/NNNN
+--                 (lomítko se odstraní)
+--     Pokud vstup začíná 'CZ' → ověřit číselnou část
+--     Pokud vstup začíná číslicí → doplnit prefix 'CZ'
+--     Pokud číselná část = platné IČO (8 číslic) → 'CZ' + fn_NormalizeICO
+--     Neplatný formát → NULL
+--
+--   Ostatní státy:
+--     Jen fn_CleanString + odstranění mezer/pomlček
+--     Žádná validace délky ani formátu
+--     Prefix státu: pokud chybí a @StatKod je zadán, NEDOPLŇOVAT
+--     (zahraniční DIČ mají různé formáty, raději zachovat jak jsou)
+--
+-- Vrací NULL pokud:
+--   • vstup je NULL nebo prázdný
+--   • @StatKod = 'CZ' a číselná část nesplňuje délku 8–10
+--   • @StatKod = 'CZ' a číselná část obsahuje nečíselné znaky
+--
+-- Příklady:
+--   fn_NormalizeDIC('CZ25596641', 'CZ') → 'CZ25596641'
+--   fn_NormalizeDIC('25596641',   'CZ') → 'CZ25596641'
+--   fn_NormalizeDIC('CZ 256 964 81', 'CZ') → 'CZ25696481'
+--   fn_NormalizeDIC('640315/2668', 'CZ') → 'CZ6403152668'  (RC = 10 číslic)
+--   fn_NormalizeDIC('DE 123456789', 'DE') → 'DE123456789'   (jen čištění)
+--   fn_NormalizeDIC('ATU12345678', 'AT') → 'ATU12345678'    (zachovat jak je)
+-- ============================================================
+CREATE OR ALTER FUNCTION [dbo].[fn_NormalizeDIC]
+(
+    @input   NVARCHAR(50),
+    @StatKod VARCHAR(5) = NULL
+)
+RETURNS VARCHAR(20)
+AS
+BEGIN
+    IF @input IS NULL RETURN NULL;
+
+    -- Krok 1: základní čištění
+    DECLARE @clean NVARCHAR(50) = LTRIM(RTRIM([dbo].[fn_CleanString](@input)));
+    IF @clean IS NULL OR LEN(@clean) = 0 RETURN NULL;
+
+    -- Krok 2: odstranit formátovací znaky (mezery, pomlčky)
+    SET @clean = REPLACE(@clean, N' ',  N'');
+    SET @clean = REPLACE(@clean, N'-',  N'');
+    SET @clean = REPLACE(@clean, N'.',  N'');
+
+    IF LEN(@clean) = 0 RETURN NULL;
+
+    -- ── CZ DIČ – přesná logika ────────────────────────────────────────────────
+    IF UPPER(@StatKod) = 'CZ'
+    BEGIN
+        DECLARE @cislo NVARCHAR(20);
+
+        -- Oddělit prefix od číselné části
+        IF UPPER(LEFT(@clean, 2)) = 'CZ'
+            SET @cislo = SUBSTRING(@clean, 3, LEN(@clean));
+        ELSE
+            SET @cislo = @clean;
+
+        -- Odstranit lomítko (RC formát: 640315/2668 → 6403152668)
+        SET @cislo = REPLACE(@cislo, N'/', N'');
+
+        -- Musí obsahovat jen číslice
+        IF @cislo LIKE N'%[^0-9]%' RETURN NULL;
+
+        -- Délka: 8 číslic (PO = IČO), 9 nebo 10 číslic (FO = RC)
+        DECLARE @len INT = LEN(@cislo);
+        IF @len < 8 OR @len > 10 RETURN NULL;
+
+        -- Pro PO (8 číslic): normalizovat přes fn_NormalizeICO
+        -- (doplní vedoucí nuly pokud chybí, validaci checksum vynecháme)
+        IF @len = 8
+        BEGIN
+            DECLARE @ico VARCHAR(8) = [dbo].[fn_NormalizeICO](@cislo, 0);
+            IF @ico IS NULL RETURN NULL;
+            RETURN 'CZ' + @ico;
+        END
+
+        -- Pro FO (9 nebo 10 číslic): jen doplnit prefix
+        RETURN 'CZ' + @cislo;
+    END
+
+    -- ── Ostatní státy – jen čištění, bez validace ─────────────────────────────
+    -- Odstraníme jen zbývající mezery a speciální znaky
+    -- Zachováme písmena (součást formátu: AT U12345678, GB 123456789)
+    RETURN @clean;
+END
+GO
