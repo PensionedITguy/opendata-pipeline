@@ -1,0 +1,106 @@
+USE [Opendata]
+GO
+
+-- ============================================================
+-- fn_NormalizeICO
+-- Normalizuje IČO do formátu 8 číslic s vedoucími nulami.
+--
+-- Parametry:
+--   @input            - vstupní řetězec (raw IČO z libovolného zdroje)
+--   @ValidateChecksum - 0 = jen normalizovat formát, bez validace (výchozí)
+--                           DOPORUČENO pro import historických dat z OR,
+--                           ARES, registrů vozidel apod. IČO přidělená
+--                           před ~1990 nepoužívají algoritmus mod 11.
+--                       1 = ověřit kontrolní číslici algoritmem mod 11
+--                           Pouze pro data kde je jistota post-1990 přidělení
+--                           (např. validace vstupu od uživatele).
+--
+-- Vrací:
+--   Normalizované IČO jako varchar(8) s vedoucími nulami
+--   NULL pokud:
+--     • vstup je NULL nebo prázdný
+--     • po vyčištění obsahuje nečíselné znaky
+--     • délka po vyčištění > 8 číslic
+--     • @ValidateChecksum=1 a kontrolní číslice nesedí
+--
+-- Algoritmus kontrolní číslice (platí pro IČO přidělená od ~1990):
+--   Váhy:  8  7  6  5  4  3  2  (pozice 1–7)
+--   Suma = součet (číslice[i] × váha[i])
+--   Zbytek = Suma MOD 11
+--   Kontrolní číslice (8. pozice):
+--     Zbytek = 0  →  KČ = 1
+--     Zbytek = 1  →  KČ = 0
+--     Ostatní     →  KČ = 11 - Zbytek
+--   Pokud KČ > 9 → IČO principiálně neplatné → NULL
+--
+-- Příklady:
+--   fn_NormalizeICO('3479757',  0) → '03479757'  (OR data, bez validace)
+--   fn_NormalizeICO('25596641', 1) → '25596641'  (platné post-1990)
+--   fn_NormalizeICO('100219',   0) → '00100219'  (hist. IČO, prošlo by)
+--   fn_NormalizeICO('100219',   1) → NULL        (hist. IČO, KČ nesedí)
+--   fn_NormalizeICO('035 96 641', 0) → '03596641' (mezery OK)
+-- ============================================================
+CREATE OR ALTER FUNCTION [dbo].[fn_NormalizeICO]
+(
+    @input            NVARCHAR(20),
+    @ValidateChecksum BIT = 0
+)
+RETURNS VARCHAR(8)
+AS
+BEGIN
+    IF @input IS NULL RETURN NULL;
+
+    -- Krok 1: technické čištění
+    DECLARE @clean NVARCHAR(20) = [dbo].[fn_CleanString](@input);
+    IF @clean IS NULL RETURN NULL;
+
+    -- Krok 2: odstranit formátovací znaky
+    SET @clean = REPLACE(@clean, N' ',  N'');
+    SET @clean = REPLACE(@clean, N'-',  N'');
+    SET @clean = REPLACE(@clean, N'/',  N'');
+    SET @clean = REPLACE(@clean, N'.',  N'');
+
+    IF LEN(@clean) = 0 RETURN NULL;
+
+    -- Krok 3: pouze číslice
+    IF @clean LIKE N'%[^0-9]%' RETURN NULL;
+
+    -- Krok 4: max 8 číslic
+    IF LEN(@clean) > 8 RETURN NULL;
+
+    -- Krok 5: doplnit vedoucí nuly na 8 číslic
+    DECLARE @ico VARCHAR(8) = RIGHT('00000000' + @clean, 8);
+
+    -- Krok 6: validace kontrolní číslice (pouze pokud požadována)
+    IF @ValidateChecksum = 1
+    BEGIN
+        DECLARE @suma   INT = 0;
+        DECLARE @vahy   VARCHAR(7) = '8765432';
+        DECLARE @i      INT = 1;
+
+        WHILE @i <= 7
+        BEGIN
+            SET @suma += CAST(SUBSTRING(@ico, @i, 1) AS INT)
+                       * CAST(SUBSTRING(@vahy, @i, 1) AS INT);
+            SET @i += 1;
+        END
+
+        DECLARE @zbytek INT = @suma % 11;
+        DECLARE @kc     INT;
+
+        SET @kc = CASE @zbytek
+                      WHEN 0 THEN 1
+                      WHEN 1 THEN 0
+                      ELSE        11 - @zbytek
+                  END;
+
+        -- KČ = 10 znamená principiálně neplatné IČO
+        IF @kc > 9  RETURN NULL;
+
+        -- Porovnat s 8. číslicí
+        IF CAST(SUBSTRING(@ico, 8, 1) AS INT) <> @kc RETURN NULL;
+    END
+
+    RETURN @ico;
+END
+GO
